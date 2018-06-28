@@ -117,8 +117,16 @@ second = str(memorableword[second-1:second])
 
 driver.find_element_by_xpath("//input[@id='letter1Answer']").send_keys(first)
 driver.find_element_by_xpath("//input[@id='letter2Answer']").send_keys(second)
+time.sleep(5)
+n = shotnhtml(driver, n)
+
+logging.info("logging on")
 driver.find_element_by_id("btn-login").click()
 time.sleep(5)
+n = shotnhtml(driver, n)
+
+logging.info("waiting for login to complete")
+time.sleep(10)
 n = shotnhtml(driver, n)
 
 logging.info("selecting transactions")
@@ -129,6 +137,20 @@ n = shotnhtml(driver, n)
 logging.info("selecting view more transactions")
 driver.find_element_by_xpath("//div[@data-webtrends-ref='home-recentTrans']/a").click()
 time.sleep(5)
+n = shotnhtml(driver, n)
+
+logging.info("selecting Filter & Search")
+driver.find_element_by_xpath("//ul[@class='tablist']/li[@id='tab1']").click()
+time.sleep(5)
+n = shotnhtml(driver, n)
+
+logging.info("selecting 3 months")
+driver.find_element_by_xpath("//div[@class='dateLinks']/ul/li").click()
+time.sleep(5)
+n = shotnhtml(driver, n)
+
+logging.info("waiting for page load")
+time.sleep(10)
 n = shotnhtml(driver, n)
 
 logging.info("selecting expand all")
@@ -149,6 +171,19 @@ for row in rows:
     amount = r[-1:][0]
 
     data = [date, desc, amount]
+
+    pp(r)
+
+#    241 Business type
+#    241 Cardholder
+#    241 Country
+#    152 Exchange Rate
+#    152 Forex Amount
+#     17 Payment method
+#    243 PIN Used
+#    243 Retailer name
+#     34 Retailer number
+#    243 Town
 
     logging.info("transaction %s" % " ".join(data))
     c.writerow(data)
