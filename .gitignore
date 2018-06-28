@@ -1,4 +1,5 @@
 *.log
+*.csv
 *.html
 *.png
 *.ini
