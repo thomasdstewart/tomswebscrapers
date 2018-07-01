@@ -22,6 +22,7 @@ import configparser
 import selenium.webdriver.chrome.options
 import selenium.webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.keys import Keys
 import re
 import os
 import time
@@ -152,9 +153,32 @@ driver.find_element_by_xpath("//button").click()
 time.sleep(5)
 n = shotnhtml(driver, n)
 
-logging.info("opening barclaysscrape.csv")
-f = open('barclaysscrape.csv', 'a')
-c = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+#logging.info("opening barclaysscrape.csv")
+#f = open('barclaysscrape.csv', 'a')
+#c = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+def writedata(data):
+    basename = 'barclaysscrape'
+    year = data[1][6:10]
+    filename = '%s-%s.csv' % (basename, year)
+
+    with open(filename, 'a') as f:
+        f.close()
+
+    alldata = []
+    with open(filename, newline='') as csvfile:
+        csvreader = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for row in csvreader:
+            alldata.append(row)
+
+    if(data not in alldata):
+        alldata.append(data)
+
+    with open(filename, 'w', newline='') as csvfile:
+        csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for row in alldata:
+            csvwriter.writerow(row)
+
 
 logging.info("getting account list")
 accounts = {}
@@ -195,14 +219,22 @@ for account in accounts:
 
         data = [account, date, desc1, desc2, desc3, ammount, balance]
         logging.info("trancastion %s" % " ".join(data))
-        c.writerow(data)
+        #c.writerow(data)
+        writedata(data)
+
+    logging.info("finished account %s" % account)
+    n = shotnhtml(driver, n)
+
+    logging.info("scrolling up")
+    driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
+    n = shotnhtml(driver, n)
 
     logging.info("returning home")
     driver.find_element_by_class_name("home").click()
     n = shotnhtml(driver, n)
 
-logging.info("closing barclaysscrape.csv")
-f.close()
+#logging.info("closing barclaysscrape.csv")
+#f.close()
 
 logging.info("logging out")
 driver.find_element_by_id("logout").click()
