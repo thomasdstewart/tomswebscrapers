@@ -51,7 +51,7 @@ def getinfo (url):
         i['rating'] = '?'
 
     address = doc.xpath('//div[@class="vendor-address"]/text()')
-    if(len(address) == 1):
+    if(len(address) >= 1):
         address = address[0].split()
         address = ' '.join(address)
     else:
@@ -132,7 +132,7 @@ def getinfo (url):
     return(i)
 
 
-#pp(getinfo('https://www.matrimonio.com/fotografo-matrimonio/nice-shot-art--e160346')); sys.exit()
+#pp(getinfo('https://www.matrimonio.com/fotografo-matrimonio/hyde-park-wedding--e76405')); sys.exit()
 #pp(getinfo('')); sys.exit()
 
 baseurl = 'https://www.matrimonio.com/fotografo-matrimonio'
