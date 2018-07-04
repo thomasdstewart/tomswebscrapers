@@ -33,6 +33,8 @@ from pprint import pprint as pp
 #import ipdb; from IPython import embed; embed()
 
 parser = argparse.ArgumentParser()
+parser.add_argument("-c", "--config",
+                    help="config file to use (eg barclaysscrape.ini)")
 parser.add_argument("-d", "--debug",
                     help="log to stdout and save screenshots and html", action="store_true",
                     default=False)
@@ -93,6 +95,7 @@ driver.implicitly_wait(5)
 
 n = 1
 
+
 def shotnhtml(d, n):
     if(not args.debug):
         return n
@@ -113,7 +116,7 @@ n = shotnhtml(driver, n)
 try:
     driver.find_element_by_class_name("bc-checkbox")
 except NoSuchElementException:
-    logging.info("bc-checkbox class not found, browser compatable")
+    logging.info("bc-checkbox class not found, browser compatible")
 else:
     driver.find_element_by_class_name("bc-checkbox").click()
     driver.find_element_by_id("bc-button").click()
@@ -153,33 +156,6 @@ driver.find_element_by_xpath("//button").click()
 time.sleep(5)
 n = shotnhtml(driver, n)
 
-#logging.info("opening barclaysscrape.csv")
-#f = open('barclaysscrape.csv', 'a')
-#c = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-def writedata(data):
-    basename = 'barclaysscrape'
-    year = data[1][6:10]
-    filename = '%s-%s.csv' % (basename, year)
-
-    with open(filename, 'a') as f:
-        f.close()
-
-    alldata = []
-    with open(filename, newline='') as csvfile:
-        csvreader = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        for row in csvreader:
-            alldata.append(row)
-
-    if(data not in alldata):
-        alldata.append(data)
-
-    with open(filename, 'w', newline='') as csvfile:
-        csvwriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        for row in alldata:
-            csvwriter.writerow(row)
-
-
 logging.info("getting account list")
 accounts = {}
 for account in driver.find_elements_by_xpath(
@@ -191,6 +167,7 @@ for account in driver.find_elements_by_xpath(
 
 logging.info("found accounts %s" % ",".join(accounts.keys()))
 
+data = []
 for account in accounts:
     logging.info("getting account %s" % account)
     driver.find_element_by_xpath(
@@ -204,6 +181,7 @@ for account in accounts:
     for row in rows:
         r = row.text.split('\n')
         date = r[0]
+        year = date.split('/')[2]
         desc1 = r[1]
 
         r[2] = r[2].replace(',', '').replace('£', '')
@@ -217,10 +195,9 @@ for account in accounts:
         desc2 = d[2].strip()
         desc3 = d[5].strip()
 
-        data = [account, date, desc1, desc2, desc3, ammount, balance]
-        logging.info("trancastion %s" % " ".join(data))
-        #c.writerow(data)
-        writedata(data)
+        row = [account, year, date, desc1, desc2, desc3, ammount, balance]
+        data.append(row)
+        logging.info("transaction %s" % " ".join(row))
 
     logging.info("finished account %s" % account)
     n = shotnhtml(driver, n)
@@ -233,8 +210,61 @@ for account in accounts:
     driver.find_element_by_class_name("home").click()
     n = shotnhtml(driver, n)
 
-#logging.info("closing barclaysscrape.csv")
-#f.close()
+# find duplicates and number them
+refs = {}
+for r in data:
+    # create index of things to unique
+    index = "%s-%s-%s-%s-%s-%s-%s" % (r[0], r[1], r[2], r[3], r[4], r[5], r[6])
+    if(index in refs):
+        # if the index is already in, increment the counter and save the row
+        refs[index] = [refs[index][0] + 1, r]
+    else:
+        # if not, set the count to 1 and save the row
+        refs[index] = [1, r]
+
+# loop over all the uniq rows
+datacounted = []
+for index in refs:
+    # loop for row count
+    for c in range(1, refs[index][0] + 1):
+        # append count to row
+        row = refs[index][1]
+        datacounted.append(row + [c])
+
+years = {}
+for row in datacounted:
+    year = row[1]
+    years[year] = True
+
+pp(years)
+pp(datacounted)
+for year in years:
+    basename = 'barclaysscrape'
+    filename = '%s-%s.csv' % (basename, year)
+    logging.info("opening %s" % filename)
+
+    alldata = []
+    with open(filename, 'a') as f:
+        f.close()
+
+    pp(alldata)
+    with open(filename, newline='') as csvfile:
+        csvreader = csv.reader(
+            csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for row in csvreader:
+            alldata.append(row)
+
+    pp(alldata)
+    for row in datacounted:
+        if(row[1] == year and row not in alldata):
+            alldata.append(data)
+
+    pp(alldata)
+    with open(filename, 'w', newline='') as csvfile:
+        csvwriter = csv.writer(
+            csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for row in alldata:
+            csvwriter.writerow(row)
 
 logging.info("logging out")
 driver.find_element_by_id("logout").click()
