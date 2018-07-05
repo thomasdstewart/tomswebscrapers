@@ -227,7 +227,7 @@ for row in data:
     # create index of things to unique
     index = "%s" % "".join(row[-1])
     if(index not in refs):
-        #set the count to 1 and save the row
+        # set the count to 1 and save the row
         refs[index] = [1, row]
     else:
         # increment the count and save the row
@@ -240,7 +240,7 @@ for index in refs:
     for count in range(1, refs[index][0] + 1):
         # append count to row
         row = refs[index][1]
-        datacounted.append(row + [count])
+        datacounted.append(row + [str(count)])
 
 years = {}
 for row in datacounted:
@@ -250,8 +250,8 @@ for row in datacounted:
 for year in years:
     basename = 'barclaysscrape'
     filename = '%s-%s.csv' % (basename, year)
-
     alldata = []
+
     with open(filename, 'a') as f:
         f.close()
 
