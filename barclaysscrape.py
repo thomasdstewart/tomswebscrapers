@@ -38,6 +38,8 @@ parser.add_argument("-c", "--config",
 parser.add_argument("-d", "--debug",
                     help="log to stdout and save screenshots and html", action="store_true",
                     default=False)
+parser.add_argument("-o", "--output",
+                    help="output file basename (eg barclaycard to give barclaycard-2018.csv)")
 parser.add_argument("-p", "--proxy",
                     help="http proxy to use (eg localhost:8888)")
 args = parser.parse_args()
@@ -186,7 +188,7 @@ for account in accounts:
 
         r[2] = r[2].replace(',', '').replace('£', '')
         a = re.findall(r"[^ ]+", r[2])
-        ammount = a[0]
+        amount = a[0]
         balance = a[1]
 
         d = row.find_element_by_xpath("td[@class='description']/div")
@@ -195,9 +197,17 @@ for account in accounts:
         desc2 = d[2].strip()
         desc3 = d[5].strip()
 
-        row = [account, year, date, desc1, desc2, desc3, ammount, balance]
-        data.append(row)
-        logging.info("transaction %s" % " ".join(row))
+        sdesc3 = d[5].strip().split()
+
+        desc3 = " ".join(sdesc3[:-1])
+        desc4 = ""
+        if(len(sdesc3) > 0 and desc4 != desc3):
+            desc4 = sdesc3[-1]
+
+        data.append([account, year, date, desc1,
+                     desc2, desc3, desc4, amount, balance])
+        logging.info("transaction act:%s, date:%s, desc:%s, amount:%s" %
+                     (account, date, desc1, amount))
 
     logging.info("finished account %s" % account)
     n = shotnhtml(driver, n)
@@ -210,56 +220,54 @@ for account in accounts:
     driver.find_element_by_class_name("home").click()
     n = shotnhtml(driver, n)
 
+logging.info("processing duplicates")
 # find duplicates and number them
 refs = {}
-for r in data:
+for row in data:
     # create index of things to unique
-    index = "%s-%s-%s-%s-%s-%s-%s" % (r[0], r[1], r[2], r[3], r[4], r[5], r[6])
-    if(index in refs):
-        # if the index is already in, increment the counter and save the row
-        refs[index] = [refs[index][0] + 1, r]
+    index = "%s" % "".join(row[-1])
+    if(index not in refs):
+        #set the count to 1 and save the row
+        refs[index] = [1, row]
     else:
-        # if not, set the count to 1 and save the row
-        refs[index] = [1, r]
+        # increment the count and save the row
+        refs[index] = [refs[index][0] + 1, row]
 
 # loop over all the uniq rows
 datacounted = []
 for index in refs:
     # loop for row count
-    for c in range(1, refs[index][0] + 1):
+    for count in range(1, refs[index][0] + 1):
         # append count to row
         row = refs[index][1]
-        datacounted.append(row + [c])
+        datacounted.append(row + [count])
 
 years = {}
 for row in datacounted:
     year = row[1]
     years[year] = True
 
-pp(years)
-pp(datacounted)
 for year in years:
     basename = 'barclaysscrape'
     filename = '%s-%s.csv' % (basename, year)
-    logging.info("opening %s" % filename)
 
     alldata = []
     with open(filename, 'a') as f:
         f.close()
 
-    pp(alldata)
+    logging.info("reading %s" % filename)
     with open(filename, newline='') as csvfile:
         csvreader = csv.reader(
             csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         for row in csvreader:
             alldata.append(row)
 
-    pp(alldata)
+    logging.info("merging transactions")
     for row in datacounted:
-        if(row[1] == year and row not in alldata):
-            alldata.append(data)
+        if(int(row[1]) == int(year) and row not in alldata):
+            alldata.append(row)
 
-    pp(alldata)
+    logging.info("reading %s" % filename)
     with open(filename, 'w', newline='') as csvfile:
         csvwriter = csv.writer(
             csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -270,3 +278,4 @@ logging.info("logging out")
 driver.find_element_by_id("logout").click()
 n = shotnhtml(driver, n)
 driver.close()
+logging.info("finished")
