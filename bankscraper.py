@@ -36,7 +36,7 @@ class BankScraper:
     def __init__(self, basename, configfile="", proxy="", debug=False):
         self.basename = basename
         if(configfile == ""):
-            self.configfile = '{}.ini'.format(basename)
+            self.configfile = 'bankscrape.ini'
         else:
             self.configfile = configfile
         self.proxy = proxy
@@ -50,7 +50,7 @@ class BankScraper:
                                 level=logging.INFO, format='%(levelname)s %(asctime)s %(message)s')
 
         self.readconfig()
-        self.startselenium(self.proxy)
+        self.startselenium()
 
     def readconfig(self):
         logging.info("reading config")
@@ -72,7 +72,7 @@ class BankScraper:
     def config_check(self):
         return
 
-    def startselenium(self, proxy):
+    def startselenium(self):
         logging.info("setting up selenium")
         chrome_options = selenium.webdriver.chrome.options.Options()
         chrome_options.add_argument("--headless")
@@ -81,11 +81,11 @@ class BankScraper:
         chrome_options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) " +
                                     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.78 Safari/537.36")
 
-        if(proxy):
+        if(self.proxy):
             # if('http_proxy' in os.environ.keys()):
             #    args.proxy = os.environ['http_proxy']
-            logging.info("using proxy: %s" % proxy)
-            chrome_options.add_argument("--proxy-server=%s" % proxy)
+            logging.info("using proxy: %s" % self.proxy)
+            chrome_options.add_argument("--proxy-server=%s" % self.proxy)
         else:
             logging.info("not using proxy")
 

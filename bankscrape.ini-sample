@@ -1,0 +1,16 @@
+[barclaysscrape]
+surname = Flinstone
+membershipnum = 123456789012
+passcode = 012345
+password = qwertyui
+
+[barclaycardscrape]
+username = Flinstone
+passcode = 012345
+memorableword = qwertyui
+
+[halifaxscrape]
+username = 0123456768
+password = password
+memorableword = password
+
