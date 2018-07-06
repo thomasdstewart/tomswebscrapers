@@ -144,8 +144,9 @@ class BarclaysScraper(BankScraper):
                 if(len(sdesc3) > 0 and desc4 != desc3):
                     desc4 = sdesc3[-1]
 
-                self.data.append([year, account, date, desc1,
-                             desc2, desc3, desc4, amount, balance])
+                d = [year, account, date, desc1, desc2,
+                     desc3, desc4, amount, balance]
+                self.data.append(d)
                 logging.info("transaction act:%s, date:%s, desc:%s, amount:%s" %
                              (account, date, desc1, amount))
 
@@ -170,6 +171,7 @@ class BarclaysScraper(BankScraper):
 
         self.finish()
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config",
                     help="config file to use (eg barclaysscrape.ini)")
@@ -179,8 +181,9 @@ parser.add_argument("-d", "--debug",
 parser.add_argument("-o", "--output",
                     help="output file basename (eg barclaycard to give barclaycard-2018.csv)")
 parser.add_argument("-p", "--proxy",
-                    help="http proxy to use (eg localhost:8888)")
+                    help="http proxy to use (eg localhost:8888)", default="")
 args = parser.parse_args()
 
-b = BarclaysScraper('barclaysscraper', proxy=args.proxy, debug=args.proxy)
+
+b = BarclaysScraper('barclaysscraper', proxy=args.proxy, debug=args.debug)
 b.scrape()

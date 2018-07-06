@@ -111,7 +111,7 @@ class BankScraper:
         refs = {}
         for row in self.data:
             # create index of things to unique
-            index = "%s" % "".join(row[-1])
+            index = "%s" % "".join(row[:-1])
             if(index not in refs):
                 # set the count to 1 and save the row
                 refs[index] = [1, row]
@@ -162,4 +162,3 @@ class BankScraper:
     def finish(self):
         self.driver.close()
         logging.info("finished")
-
