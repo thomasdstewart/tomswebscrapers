@@ -136,7 +136,7 @@ class HalifaxScraper(BankScraper):
             ref = row.get_attribute("transactionref")
             amount = row.get_attribute("amount")
 
-            d = year, account, date, desc, ref, amount, "0"]
+            d = [year, account, date, desc, ref, amount, "0"]
             self.data.append(d)
             logging.info("transaction date:%s, desc:%s, amount:%s" %
                          (date, desc1, amount))

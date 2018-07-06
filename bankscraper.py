@@ -36,7 +36,7 @@ class BankScraper:
     def __init__(self, basename, configfile="", proxy="", debug=False):
         self.basename = basename
         if(configfile == ""):
-            self.configfile = 'bankscrape.ini'
+            self.configfile = 'bankscraper.ini'
         else:
             self.configfile = configfile
         self.proxy = proxy
