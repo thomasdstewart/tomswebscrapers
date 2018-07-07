@@ -187,7 +187,7 @@ class BarclaycardScraper(BankScraper):
             pin = r[-1:][0][10:]
             r = r[:-1]
 
-            d = [year, account, date, year, desc, retailername, retailernumber,
+            d = [year, account, date, desc, retailername, retailernumber,
                  paymentmethod, businesstype, category, pin, town, country, amount, "0"]
 
             self.data.append(d)
