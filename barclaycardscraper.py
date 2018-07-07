@@ -191,7 +191,8 @@ class BarclaycardScraper(BankScraper):
                  paymentmethod, businesstype, category, pin, town, country, amount, "0"]
 
             self.data.append(d)
-            logging.info("transaction %s" % " ".join(d))
+            logging.info("transaction date:%s, desc:%s, amount:%s" % (date, desc1, amount))
+
 
         logging.info("logging out")
         self.driver.find_element_by_id("logout").click()
