@@ -124,22 +124,52 @@ class HalifaxScraper(BankScraper):
         time.sleep(5)
         self.shotnhtml()
 
-        self.data = []
-        rows = self.driver.find_elements_by_xpath(
-            "//table[@id='statement-table']/tbody/tr[@tabindex]/td[@transactionref]")
-        logging.info("found %s transactions" % (len(rows)))
-        for row in rows:
-            date = row.text
-            year = "20%s" % date.split()[2]
-            account = self.username
-            desc = row.get_attribute("merchantname").strip()
-            ref = row.get_attribute("transactionref")
-            amount = row.get_attribute("amount")
+        for x in range(3):
+            logging.info("looping page %s" % x)
 
-            d = [year, account, date, desc, ref, amount, "0"]
-            self.data.append(d)
-            logging.info("transaction date:%s, desc:%s, amount:%s" %
-                         (date, desc1, amount))
+            rows = self.driver.find_elements_by_xpath(
+                "//table[@id='statement-table']/tbody/tr[@tabindex]/td[@transactionref]")
+            logging.info("found %s transactions" % (len(rows)))
+            for row in rows:
+                logging.info("clicking row")
+                row.click()
+                time.sleep(1)
+                self.shotnhtml()
+
+            self.data = []
+            rows = self.driver.find_elements_by_xpath(
+                "//table[@id='statement-table']/tbody/tr[@tabindex]/td[@transactionref]")
+            logging.info("found %s transactions" % (len(rows)))
+            for row in rows:
+                date = row.text
+                year = "20%s" % date.split()[2]
+                account = self.username
+                desc1 = row.get_attribute("merchantname").strip()
+                ref = row.get_attribute("transactionref")
+                amount = row.get_attribute("amount")
+
+                nrow = row.find_element_by_xpath('../following-sibling::*')
+                try:
+                    d = nrow.find_element_by_xpath(
+                        './td/div/table/tbody/tr/td').text
+                except NoSuchElementException:
+                    print("no element")
+                    desc2 = ""
+                    cat = ""
+                else:
+                    d = d.split('\n')
+                    desc2 = d[1]
+                    cat = d[2]
+
+                d = [year, account, date, desc1, desc2, cat, ref, amount, "0"]
+                self.data.append(d)
+                logging.info("transaction date:%s, desc:%s, amount:%s" %
+                             (date, desc1, amount))
+
+            logging.info("selecting earlier")
+            self.driver.find_element_by_id("lnkEarlierBtnMACC").click()
+            time.sleep(5)
+            self.shotnhtml()
 
         logging.info("logging out")
         self.driver.find_element_by_id(
@@ -150,8 +180,8 @@ class HalifaxScraper(BankScraper):
         self.finish()
 
 
-name="halifaxscraper"
-parser=argparse.ArgumentParser()
+name = "halifaxscraper"
+parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config",
                     help="config file to use (eg %s.ini)" % name)
 parser.add_argument("-d", "--debug",
@@ -161,8 +191,8 @@ parser.add_argument("-o", "--output",
                     help="output file basename (eg %s to give %s-2018.csv)" % (name, name))
 parser.add_argument("-p", "--proxy",
                     help="http proxy to use (eg localhost:8888)", default="")
-args=parser.parse_args()
+args = parser.parse_args()
 
 
-b=HalifaxScraper(name, proxy=args.proxy, debug=args.debug)
+b = HalifaxScraper(name, proxy=args.proxy, debug=args.debug)
 b.scrape()
