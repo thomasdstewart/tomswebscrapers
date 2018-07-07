@@ -130,20 +130,65 @@ class BarclaycardScraper(BankScraper):
             year = "20%s" % date.split()[2]
             desc = r[1].strip()
             amount = r[-1:][0]
+            category = r[-2:][0]
 
-            d = [year, account, date, desc, amount, "0"]
+            r = r[2:]
+            r = r[:-4]
+            if("Cardholder: 2005" in r):
+                r.remove("Cardholder: 2005")
+            if("Exchange Rate: 1.0000" in r):
+                r.remove("Exchange Rate: 1.0000")
 
-            # import ipdb; from IPython import embed; embed()
-            #    241 Business type
-            #    241 Cardholder
-            #    241 Country
-            #    243 PIN Used
-            #    243 Retailer name
-            #    243 Town
-            #    152 Exchange Rate
-            #    152 Forex Amount
-            #     34 Retailer number
-            #     17 Payment method
+            for d in r:
+                m = re.search("[0-9.]+ POUND STERLING [A-Z ]+", d)
+                if(m):
+                    r.remove(m[0])
+
+                m = re.search("Forex Amount: [0-9. ]+ Pound Sterling", d)
+                if(m):
+                    r.remove(m[0])
+
+            businesstype = ""
+            retailername = ""
+            retailernumber = ""
+            paymentmethod = ""
+            country = ""
+            town = ""
+            for d in r:
+                if("Business type:" in d):
+                    businesstype = d
+
+                if("Retailer name:" in d):
+                    retailername = d
+
+                if("Retailer number:" in d):
+                    retailernumber = d
+
+                if("Payment method:" in d):
+                    paymentmethod = d
+
+                if("Country:" in d):
+                    country = d
+
+                if("Town:" in d):
+                    town = d
+
+            if(businesstype in r):
+                r.remove(businesstype)
+            if(retailername in r):
+                r.remove(retailername)
+            if(retailernumber in r):
+                r.remove(retailernumber)
+            if(paymentmethod in r):
+                r.remove(paymentmethod)
+            r.remove(country)
+            r.remove(town)
+
+            pin = r[-1:][0][10:]
+            r = r[:-1]
+
+            d = [year, account, date, year, desc, retailername, retailernumber,
+                 paymentmethod, businesstype, category, pin, town, country, amount, "0"]
 
             self.data.append(d)
             logging.info("transaction %s" % " ".join(d))
