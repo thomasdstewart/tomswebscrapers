@@ -129,7 +129,7 @@ class BarclaycardScraper(BankScraper):
             account = self.username
             year = "20%s" % date.split()[2]
             desc = r[1].strip()
-            amount = r[-1:][0]
+            amount = r[-1:][0].strip()
             category = r[-2:][0]
 
             r = r[2:]
@@ -191,8 +191,8 @@ class BarclaycardScraper(BankScraper):
                  paymentmethod, businesstype, category, pin, town, country, amount, "0"]
 
             self.data.append(d)
-            logging.info("transaction date:%s, desc:%s, amount:%s" % (date, desc, amount))
-
+            logging.info("transaction date:%s, desc:%s, amount:%s" %
+                         (date, desc, amount))
 
         logging.info("logging out")
         self.driver.find_element_by_id("logout").click()
