@@ -130,6 +130,8 @@ class BankScraper:
                 row = refs[index][1]
                 datacounted.append(row + [str(count)])
 
+        logging.info("transactions: %s" % len(datacounted))
+
         years = {}
         for row in datacounted:
             year = row[0]
@@ -149,10 +151,14 @@ class BankScraper:
                 for row in csvreader:
                     alldata.append(row)
 
-            logging.info("merging transactions")
+            new = 0
+            logging.info("merging with %s transactions" % len(alldata))
             for row in datacounted:
                 if(int(row[0]) == int(year) and row not in alldata):
                     alldata.append(row)
+                    new = new + 1
+
+            logging.info("added %s transactions" % new)
 
             logging.info("reading %s" % filename)
             with open(filename, 'w', newline='') as csvfile:
@@ -160,6 +166,8 @@ class BankScraper:
                     csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 for row in alldata:
                     csvwriter.writerow(row)
+
+            logging.info("wrote %s transactions" % len(alldata))
 
     def finish(self):
         self.driver.close()
