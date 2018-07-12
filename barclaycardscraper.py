@@ -98,17 +98,17 @@ class BarclaycardScraper(BankScraper):
         time.sleep(5)
         self.shotnhtml()
 
-        logging.info("selecting Filter & Search")
-        self.driver.find_element_by_xpath(
-            "//ul[@class='tablist']/li[@id='tab1']").click()
-        time.sleep(5)
-        self.shotnhtml()
+#        logging.info("selecting Filter & Search")
+#        self.driver.find_element_by_xpath(
+#            "//ul[@class='tablist']/li[@id='tab1']").click()
+#        time.sleep(5)
+#        self.shotnhtml()
 
-        logging.info("selecting 3 months")
-        self.driver.find_element_by_xpath(
-            "//div[@class='dateLinks']/ul/li").click()
-        time.sleep(5)
-        self.shotnhtml()
+#        logging.info("selecting 3 months")
+#        self.driver.find_element_by_xpath(
+#            "//div[@class='dateLinks']/ul/li").click()
+#        time.sleep(5)
+#        self.shotnhtml()
 
         logging.info("waiting for page load")
         time.sleep(10)
@@ -131,6 +131,9 @@ class BarclaycardScraper(BankScraper):
             desc = r[1].strip()
             amount = r[-1:][0].strip()
             category = r[-2:][0]
+
+            if("Payment, Thank You" == desc or "Payment By Direct Debit" == desc):
+                amount = "-" + amount
 
             r = r[2:]
             r = r[:-4]
@@ -181,8 +184,10 @@ class BarclaycardScraper(BankScraper):
                 r.remove(retailernumber)
             if(paymentmethod in r):
                 r.remove(paymentmethod)
-            r.remove(country)
-            r.remove(town)
+            if(country in r):
+                r.remove(country)
+            if(town in r):
+                r.remove(town)
 
             pin = r[-1:][0][10:]
             r = r[:-1]
