@@ -54,10 +54,12 @@ class YbsmortScraper(BankScraper):
 
         logging.info("filling username")
         self.driver.find_element_by_id("uid-ID").send_keys(self.username)
+        self.shotnhtml()
+
+        logging.info("clicking continue")
         self.driver.find_element_by_xpath(
             "//input[@name='continueBtn.value']").click()
         time.sleep(5)
-        self.shotnhtml()
 
         logging.info("filling dob")
         day = self.dob.split('-')[0]
@@ -72,16 +74,12 @@ class YbsmortScraper(BankScraper):
             "//select[@name='dateOfBirth.year']").send_keys(year)
 
         logging.info("filling memorableword")
-        first = self.driver.find_elements_by_xpath(
-            "//div[@class='v-answer pwd-chars']")
-        second = self.driver.find_elements_by_xpath(
-            "//div[@class='v-answer pwd-chars']")
-        third = self.driver.find_elements_by_xpath(
+        pwdchars = self.driver.find_elements_by_xpath(
             "//div[@class='v-answer pwd-chars']")
 
-        first = first[0].text[0]
-        second = second[1].text[0]
-        third = third[2].text[0]
+        first = pwdchars[0].text[:-2]
+        second = pwdchars[1].text[:-2]
+        third = pwdchars[2].text[:-2]
 
         first = int(first)
         second = int(second)
@@ -99,11 +97,18 @@ class YbsmortScraper(BankScraper):
             "//input[@id='char3-ID']").send_keys(third)
         self.shotnhtml()
 
-        import ipdb; from IPython import embed; embed()
+        logging.info("first:%s, second:%s, third:%s" % (first, second, third))
 
-        logging.info("logging on")
+        logging.info("waiting")
+        time.sleep(5)
+        self.shotnhtml()
+
+        logging.info("clicking continue")
         self.driver.find_element_by_xpath(
             "//input[@name='continueBtn.value']").click()
+        self.shotnhtml()
+
+        logging.info("waiting")
         time.sleep(5)
         self.shotnhtml()
 
@@ -115,6 +120,7 @@ class YbsmortScraper(BankScraper):
         balance = self.driver.find_elements_by_xpath(
             "//tbody[@class='mortgageAccounts']/tr/td")[2].text
 
+        self.data = []
         d = [year, account, date, balance, "0"]
         self.data.append(d)
         logging.info("transaction date:%s, amount:%s" %
