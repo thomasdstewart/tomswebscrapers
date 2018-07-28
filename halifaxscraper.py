@@ -118,12 +118,25 @@ class HalifaxScraper(BankScraper):
         else:
             logging.info("not found saving boost message")
 
+        logging.info("searching for balance transfer message")
+        page = self.driver.find_element_by_id("page").text
+        if("balance transfer could save you money" in page):
+            logging.info("found balance transfer message and clicking continue")
+            self.driver.find_element_by_xpath(
+                "//input[@title='Continue']").click()
+            time.sleep(5)
+            self.shotnhtml()
+
+        else:
+            logging.info("not found balance transfer message")
+
         logging.info("selecting account")
         self.driver.find_element_by_xpath(
             "//a[@id='lnkAccName_des-m-sat-xx-1']").click()
         time.sleep(5)
         self.shotnhtml()
 
+        self.data = []
         for x in range(3):
             logging.info("looping page %s" % x)
 
@@ -136,7 +149,6 @@ class HalifaxScraper(BankScraper):
                 time.sleep(1)
                 self.shotnhtml()
 
-            self.data = []
             rows = self.driver.find_elements_by_xpath(
                 "//table[@id='statement-table']/tbody/tr[@tabindex]/td[@transactionref]")
             logging.info("found %s transactions" % (len(rows)))
