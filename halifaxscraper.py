@@ -102,33 +102,43 @@ class HalifaxScraper(BankScraper):
                 "//a[@href='/personal/a/managepaperlesspreference/enhancedpaperlessinterstitial.jsp?lnkcmd=idEpi%3Anavigatetoaov&al=']").click()
             time.sleep(5)
             self.shotnhtml()
-
         else:
             logging.info("not found paperless message")
 
-        logging.info("searching for saving boost message")
-        page = self.driver.find_element_by_id("page").text
-        if("give your savings a boost" in page):
-            logging.info("found saving boost message and clicking continue")
+#        logging.info("searching for saving boost message")
+#        page = self.driver.find_element_by_id("page").text
+#        if("give your savings a boost" in page):
+#            logging.info("found saving boost message and clicking continue")
+#            self.driver.find_element_by_xpath(
+#                "//input[@title='Continue']").click()
+#            time.sleep(5)
+#            self.shotnhtml()
+#        else:
+#            logging.info("not found saving boost message")
+
+#        logging.info("searching for balance transfer message")
+#        page = self.driver.find_element_by_id("page").text
+#        if("balance transfer could save you money" in page):
+#            logging.info("found balance transfer message and clicking continue")
+#            self.driver.find_element_by_xpath(
+#                "//input[@title='Continue']").click()
+#            time.sleep(5)
+#            self.shotnhtml()
+#        else:
+#            logging.info("not found balance transfer message")
+
+        logging.info("searching for continue button")
+        try:
+            self.driver.find_element_by_xpath(
+                "//input[@title='Continue']")
+        except NoSuchElementException:
+            logging.info("continue button not found")
+        else:
+            logging.info("clicking continue button")
             self.driver.find_element_by_xpath(
                 "//input[@title='Continue']").click()
             time.sleep(5)
             self.shotnhtml()
-
-        else:
-            logging.info("not found saving boost message")
-
-        logging.info("searching for balance transfer message")
-        page = self.driver.find_element_by_id("page").text
-        if("balance transfer could save you money" in page):
-            logging.info("found balance transfer message and clicking continue")
-            self.driver.find_element_by_xpath(
-                "//input[@title='Continue']").click()
-            time.sleep(5)
-            self.shotnhtml()
-
-        else:
-            logging.info("not found balance transfer message")
 
         logging.info("selecting account")
         self.driver.find_element_by_xpath(
