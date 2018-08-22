@@ -171,4 +171,5 @@ class BankScraper:
 
     def finish(self):
         self.driver.close()
+        self.driver.quit()
         logging.info("finished")
