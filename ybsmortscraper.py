@@ -58,8 +58,9 @@ class YbsmortScraper(BankScraper):
 
         logging.info("clicking continue")
         self.driver.find_element_by_xpath(
-            "//input[@name='continueBtn.value']").click()
+            "//button[@name='continueBtn.value']").click()
         time.sleep(5)
+        self.shotnhtml()
 
         logging.info("filling dob")
         day = self.dob.split('-')[0]
@@ -73,13 +74,15 @@ class YbsmortScraper(BankScraper):
         self.driver.find_element_by_xpath(
             "//select[@name='dateOfBirth.year']").send_keys(year)
 
-        logging.info("filling memorableword")
+        logging.info("filling password chars")
         pwdchars = self.driver.find_elements_by_xpath(
-            "//div[@class='v-answer pwd-chars']")
+            "//input[@placeholder]")
 
-        first = pwdchars[0].text[:-2]
-        second = pwdchars[1].text[:-2]
-        third = pwdchars[2].text[:-2]
+        first = pwdchars[0].get_attribute("placeholder")[:-2]
+        second = pwdchars[1].get_attribute("placeholder")[:-2]
+        third = pwdchars[2].get_attribute("placeholder")[:-2]
+
+        logging.info("first:%s, second:%s, third:%s" % (first, second, third))
 
         first = int(first)
         second = int(second)
@@ -89,6 +92,8 @@ class YbsmortScraper(BankScraper):
         second = str(self.password[second-1:second])
         third = str(self.password[third-1:third])
 
+        logging.info("first:%s, second:%s, third:%s" % (first, second, third))
+
         self.driver.find_element_by_xpath(
             "//input[@id='char1-ID']").send_keys(first)
         self.driver.find_element_by_xpath(
@@ -97,15 +102,13 @@ class YbsmortScraper(BankScraper):
             "//input[@id='char3-ID']").send_keys(third)
         self.shotnhtml()
 
-        logging.info("first:%s, second:%s, third:%s" % (first, second, third))
-
         logging.info("waiting")
         time.sleep(5)
         self.shotnhtml()
 
         logging.info("clicking continue")
         self.driver.find_element_by_xpath(
-            "//input[@name='continueBtn.value']").click()
+            "//button[@name='continueBtn.value']").click()
         self.shotnhtml()
 
         logging.info("waiting")
@@ -115,10 +118,13 @@ class YbsmortScraper(BankScraper):
         logging.info("finding account and balance")
         year = datetime.datetime.today().strftime('%Y')
         account = self.driver.find_element_by_xpath(
-            "//tbody[@class='mortgageAccounts']/tr/td").text
+            "//h3[@class='card-account-number']").text
         date = datetime.datetime.today().strftime('%Y/%m/%d')
-        balance = self.driver.find_elements_by_xpath(
-            "//tbody[@class='mortgageAccounts']/tr/td")[2].text
+        balance = self.driver.find_element_by_xpath(
+            "//h3[@class='card-value ']").text
+
+        balance = balance[1:]
+        balance = balance.replace(',','')
 
         self.data = []
         d = [year, account, date, balance, "0"]
@@ -128,7 +134,7 @@ class YbsmortScraper(BankScraper):
 
         logging.info("logging out")
         self.driver.find_element_by_xpath(
-            "//input[@name='logOutBtn.value']").click()
+            "//div[@class='columns']//button[@name='logOutBtn.value']").click()
         self.shotnhtml()
 
         self.savedata("%s-%s" % (self.basename, self.username))
