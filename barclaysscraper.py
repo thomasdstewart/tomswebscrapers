@@ -129,7 +129,8 @@ class BarclaysScraper(BankScraper):
                 r[2] = r[2].replace(',', '').replace('£', '')
                 a = re.findall(r"[^ ]+", r[2])
                 amount = a[0]
-                balance = a[1]
+                #balance = a[1]
+                balance = 0
 
                 d = row.find_element_by_xpath("td[@class='description']/div")
                 d = d.get_attribute("textContent").split('\n')
