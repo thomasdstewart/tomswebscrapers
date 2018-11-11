@@ -29,6 +29,7 @@ import csv
 from pprint import pprint as pp
 # import ipdb; from IPython import embed; embed()
 
+# apt-get install python3 python3-selenium chromium-driver chromium
 
 class BankScraper:
     screenshotnumber = 1
@@ -102,7 +103,7 @@ class BankScraper:
                      % (self.basename, self.screenshotnumber))
         self.driver.save_screenshot("%s-%02d.png" %
                                     (self.basename, self.screenshotnumber))
-        f = open("%s-%02d.html" % (self.basename, self.screenshotnumber), "w")
+        f = open("%s-%02d.html" % (self.basename, self.screenshotnumber), "w", encoding="utf-8")
         f.write(self.driver.page_source)
         f.close()
         self.screenshotnumber = self.screenshotnumber + 1
