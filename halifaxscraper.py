@@ -127,18 +127,18 @@ class HalifaxScraper(BankScraper):
 #        else:
 #            logging.info("not found balance transfer message")
 
-        logging.info("searching for continue button")
-        try:
-            self.driver.find_element_by_xpath(
-                "//input[@title='Continue']")
-        except NoSuchElementException:
-            logging.info("continue button not found")
-        else:
-            logging.info("clicking continue button")
-            self.driver.find_element_by_xpath(
-                "//input[@title='Continue']").click()
-            time.sleep(5)
-            self.shotnhtml()
+        #logging.info("searching for continue button")
+        #try:
+        #    self.driver.find_element_by_xpath(
+        #        "//input[@title='Continue']")
+        #except NoSuchElementException:
+        #    logging.info("continue button not found")
+        #else:
+        #    logging.info("clicking continue button")
+        #    self.driver.find_element_by_xpath(
+        #        "//input[@title='Continue']").click()
+        #    time.sleep(5)
+        #    self.shotnhtml()
 
         logging.info("selecting account")
         self.driver.find_element_by_xpath(
