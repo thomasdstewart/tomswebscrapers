@@ -139,14 +139,14 @@ class BankScraper:
             years[year] = True
 
         for year in years:
-            filename = '%s-%s.csv' % (filename, year)
+            current_filename = '%s-%s.csv' % (filename, year)
             alldata = []
 
-            with open(filename, 'a') as f:
+            with open(current_filename, 'a') as f:
                 f.close()
 
-            logging.info("reading %s" % filename)
-            with open(filename, newline='') as csvfile:
+            logging.info("reading %s" % current_filename)
+            with open(current_filename, newline='') as csvfile:
                 csvreader = csv.reader(
                     csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 for row in csvreader:
@@ -161,8 +161,8 @@ class BankScraper:
 
             logging.info("added %s transactions" % new)
 
-            logging.info("reading %s" % filename)
-            with open(filename, 'w', newline='') as csvfile:
+            logging.info("reading %s" % current_filename)
+            with open(current_filename, 'w', newline='') as csvfile:
                 csvwriter = csv.writer(
                     csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 for row in alldata:
