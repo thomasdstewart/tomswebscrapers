@@ -14,3 +14,9 @@ username = 0123456768
 password = password
 memorableword = password
 
+[boiscraper]
+userid = 12345678
+dob = 01-01-1900
+contactnumber = 01234567890
+pin = 123456
+
