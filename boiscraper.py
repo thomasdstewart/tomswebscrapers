@@ -137,6 +137,17 @@ class BoiScraper(BankScraper):
         time.sleep(5)
         self.shotnhtml()
 
+        logging.info("looking for form:continue")
+        try:
+            self.driver.find_element_by_id("form:continue")
+        except NoSuchElementException:
+            logging.info("form:continuer not found")
+        else:
+            logging.info("clicking continue")
+            self.driver.find_element_by_id("form:continue").click()
+            time.sleep(5)
+            self.shotnhtml()
+
         logging.info("clicking statements")
         self.driver.find_element_by_id(
             "form:leftHandNavSubview:statements").click()

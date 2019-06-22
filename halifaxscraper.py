@@ -19,6 +19,7 @@
 import logging
 import argparse
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import ElementNotVisibleException
 from selenium.webdriver.common.keys import Keys
 import re
 import os
@@ -94,17 +95,17 @@ class HalifaxScraper(BankScraper):
         time.sleep(5)
         self.shotnhtml()
 
-        logging.info("searching for paperless message")
-        page = self.driver.find_element_by_id("page").text
-        if("We can help you with your filing" in page):
-            logging.info("found paperless message and clicking no thanks")
-            self.driver.find_element_by_xpath(
-                "//a[@href='/personal/a/managepaperlesspreference/enhancedpaperlessinterstitial.jsp?lnkcmd=idEpi%3Anavigatetoaov&al=']").click()
-            time.sleep(5)
-            self.shotnhtml()
-        else:
-            logging.info("not found paperless message")
-
+#        logging.info("searching for paperless message")
+#        page = self.driver.find_element_by_id("page").text
+#        if("We can help you with your filing" in page):
+#            logging.info("found paperless message and clicking no thanks")
+#            self.driver.find_element_by_xpath(
+#                "//a[@href='/personal/a/managepaperlesspreference/enhancedpaperlessinterstitial.jsp?lnkcmd=idEpi%3Anavigatetoaov&al=']").click()
+#            time.sleep(5)
+#            self.shotnhtml()
+#        else:
+#            logging.info("not found paperless message")
+#
 #        logging.info("searching for saving boost message")
 #        page = self.driver.find_element_by_id("page").text
 #        if("give your savings a boost" in page):
@@ -127,18 +128,20 @@ class HalifaxScraper(BankScraper):
 #        else:
 #            logging.info("not found balance transfer message")
 
-        #logging.info("searching for continue button")
-        #try:
-        #    self.driver.find_element_by_xpath(
-        #        "//input[@title='Continue']")
-        #except NoSuchElementException:
-        #    logging.info("continue button not found")
-        #else:
-        #    logging.info("clicking continue button")
-        #    self.driver.find_element_by_xpath(
-        #        "//input[@title='Continue']").click()
-        #    time.sleep(5)
-        #    self.shotnhtml()
+        logging.info("searching for continue button")
+        try:
+            self.driver.find_element_by_xpath(
+                "//li[@class='primaryAction']/input[@title='Continue']")
+        except NoSuchElementException:
+            logging.info("continue button not found")
+        except ElementNotVisibleException:
+            logging.info("continue button not visible")
+        else:
+            logging.info("clicking continue button")
+            self.driver.find_element_by_xpath(
+                "//input[@title='Continue']").click()
+            time.sleep(5)
+            self.shotnhtml()
 
         logging.info("selecting account")
         self.driver.find_element_by_xpath(
@@ -170,8 +173,8 @@ class HalifaxScraper(BankScraper):
                 ref = row.get_attribute("transactionref")
                 amount = row.get_attribute("amount")
 
-                nrow = row.find_element_by_xpath('../following-sibling::*')
                 try:
+                    nrow = row.find_element_by_xpath('../following-sibling::*')
                     d = nrow.find_element_by_xpath(
                         './td/div/table/tbody/tr/td').text
                 except NoSuchElementException:

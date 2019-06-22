@@ -1,18 +1,23 @@
+[barclaycardscrape]
+idnumber = 123456789
+passcode = 012345
+memorableword = qwertyui
+
 [barclaysscrape]
 surname = Flinstone
 membershipnum = 123456789012
 passcode = 012345
 password = qwertyui
 
-[barclaycardscrape]
-username = Flinstone
-passcode = 012345
-memorableword = qwertyui
-
 [halifaxscrape]
 username = 0123456768
 password = password
 memorableword = password
+
+[ybsmortscraper]
+username = Flinstone
+dob = 01-Jan-1900
+password = password
 
 [boiscraper]
 userid = 12345678
