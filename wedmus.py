@@ -16,7 +16,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import urllib.request, urllib.parse
+import urllib.request
+import urllib.parse
 import io
 import lxml.etree
 import re
@@ -25,7 +26,8 @@ import sys
 import csv
 from pprint import pprint as pp
 
-def downloadparse (url):
+
+def downloadparse(url):
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
     print('URL,' + url)
@@ -35,7 +37,8 @@ def downloadparse (url):
     html = io.StringIO(html)
     return lxml.etree.parse(html, lxml.etree.HTMLParser())
 
-def getinfo (url):
+
+def getinfo(url):
     i = {}
     i['url'] = url
     doc = downloadparse(url)
@@ -44,7 +47,8 @@ def getinfo (url):
     name = doc.xpath('//h1[@class="storefront-header-title"]/text()')
     i['name'] = name[0].strip()
 
-    rating = doc.xpath('//span[@class="storefrontItemReviews__ratio--principal"]/text()')
+    rating = doc.xpath(
+        '//span[@class="storefrontItemReviews__ratio--principal"]/text()')
     if(len(rating) == 1):
         i['rating'] = rating[0].strip()
     else:
@@ -66,8 +70,8 @@ def getinfo (url):
     else:
         i['region'] = '?'
 
-    if(region in  ['Bergamo', 'Brescia', 'Lecco', 'Lodi', 'Milano',
-            'Monza e Brianza']):
+    if(region in ['Bergamo', 'Brescia', 'Lecco', 'Lodi', 'Milano',
+                  'Monza e Brianza']):
         i['closeregion'] = 'yes'
     else:
         i['closeregion'] = 'no'
@@ -138,7 +142,7 @@ region = 'lombardia'
 csvfile = open('wedmus.csv', 'w')
 csw = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
 csw.writerow(['name', 'rating', 'address', 'region', 'closeregion', 'price',
-    'url', 'services', 'genre', 'background', 'location'])
+              'url', 'services', 'genre', 'background', 'location'])
 
 doc = downloadparse('%s/%s' % (baseurl, region))
 n = doc.xpath('//span[@class="title"]/text()')[0]
@@ -156,8 +160,8 @@ for i in range(1, n):
     for t in things:
         i = getinfo(t)
         csw.writerow([i['name'], i['rating'], i['address'], i['region'],
-            i['closeregion'], i['price'], i['url'], i['services'],
-            i['genre'], i['background'], i['location']])
+                      i['closeregion'], i['price'], i['url'], i['services'],
+                      i['genre'], i['background'], i['location']])
         print("%s\t%s" % (i['name'], i['url']))
 
     time.sleep(3)

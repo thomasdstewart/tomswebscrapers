@@ -82,20 +82,23 @@ class BoiScraper(BankScraper):
             day = self.dob.split('-')[0]
             month = self.dob.split('-')[1]
             year = self.dob.split('-')[2]
-            #Javascript helpers seem to move cursor about to stop text entry
-            #self.driver.find_element_by_id("form:dateOfBirth_date").send_keys(day)
-            #self.driver.find_element_by_id("form:dateOfBirth_month").send_keys(month)
-            #self.driver.find_element_by_id("form:dateOfBirth_year").send_keys(year)
+            # Javascript helpers seem to move cursor about to stop text entry
+            # self.driver.find_element_by_id("form:dateOfBirth_date").send_keys(day)
+            # self.driver.find_element_by_id("form:dateOfBirth_month").send_keys(month)
+            # self.driver.find_element_by_id("form:dateOfBirth_year").send_keys(year)
 
             time.sleep(1)
             script = "return arguments[0].value = '%s'" % day
-            self.driver.execute_script(script, self.driver.find_element_by_id("form:dateOfBirth_date"))
+            self.driver.execute_script(
+                script, self.driver.find_element_by_id("form:dateOfBirth_date"))
             time.sleep(1)
             script = "return arguments[0].value = '%s'" % month
-            self.driver.execute_script(script, self.driver.find_element_by_id("form:dateOfBirth_month"))
+            self.driver.execute_script(
+                script, self.driver.find_element_by_id("form:dateOfBirth_month"))
             time.sleep(1)
             script = "return arguments[0].value = '%s'" % year
-            self.driver.execute_script(script, self.driver.find_element_by_id("form:dateOfBirth_year"))
+            self.driver.execute_script(
+                script, self.driver.find_element_by_id("form:dateOfBirth_year"))
             time.sleep(1)
 
             self.shotnhtml()
@@ -163,13 +166,17 @@ class BoiScraper(BankScraper):
             "//span[@id='form:completedTransactionPanel']//tr")
         logging.info("found %s transactions" % (len(rows)))
         for row in rows:
-            date = row.find_element_by_xpath("td[contains(@id,'dateColumn')]").text
+            date = row.find_element_by_xpath(
+                "td[contains(@id,'dateColumn')]").text
             year = date.split('/')[2]
-            desc = row.find_element_by_xpath("td[contains(@id,'detailsColumn')]").text
+            desc = row.find_element_by_xpath(
+                "td[contains(@id,'detailsColumn')]").text
             desc = desc.strip()
 
-            debit = row.find_element_by_xpath("td[contains(@id,'debitColumn')]").text
-            credit = row.find_element_by_xpath("td[contains(@id,'creditColumn')]").text
+            debit = row.find_element_by_xpath(
+                "td[contains(@id,'debitColumn')]").text
+            credit = row.find_element_by_xpath(
+                "td[contains(@id,'creditColumn')]").text
 
             if(debit != ''):
                 amount = "-" + debit

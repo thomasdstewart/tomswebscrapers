@@ -53,7 +53,8 @@ class BarclaycardScraper(BankScraper):
 
         logging.info("filling idnumber")
         self.driver.find_element_by_xpath("//input[@id='idNumber']/..").click()
-        self.driver.find_element_by_xpath("//input[@name='idNumber']").send_keys(self.idnumber)
+        self.driver.find_element_by_xpath(
+            "//input[@name='idNumber']").send_keys(self.idnumber)
         self.shotnhtml()
 
         logging.info("clicking next")

@@ -99,7 +99,8 @@ class BarclaysScraper(BankScraper):
 
         logging.info("searching for continue to online banking")
         try:
-            button = self.driver.find_element_by_xpath("//buton[title='Continue to Online Banking']")
+            button = self.driver.find_element_by_xpath(
+                "//buton[title='Continue to Online Banking']")
         except NoSuchElementException:
             logging.info("continue to online banking not found")
         else:

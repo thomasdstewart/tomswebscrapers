@@ -124,7 +124,7 @@ class YbsmortScraper(BankScraper):
             "//h3[@class='card-value ']").text
 
         balance = balance[1:]
-        balance = balance.replace(',','')
+        balance = balance.replace(',', '')
 
         self.data = []
         d = [year, account, date, balance, "0"]
