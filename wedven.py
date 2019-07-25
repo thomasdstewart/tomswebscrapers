@@ -16,7 +16,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-import urllib.request, urllib.parse
+import urllib.request
+import urllib.parse
 import io
 import lxml.etree
 import re
@@ -24,9 +25,10 @@ import sys
 import csv
 from pprint import pprint as pp
 
-#https://www.matrimonio.com/castelli-matrimoni/castello-di-rossino--e6433
+# https://www.matrimonio.com/castelli-matrimoni/castello-di-rossino--e6433
 
-def downloadparse (url):
+
+def downloadparse(url):
     opener = urllib.request.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
     #print('URL,' + url)
@@ -36,7 +38,8 @@ def downloadparse (url):
     html = io.StringIO(html)
     return lxml.etree.parse(html, lxml.etree.HTMLParser())
 
-def getinfo (url):
+
+def getinfo(url):
     vi = {}
     vi['url'] = url
     doc = downloadparse(url)
@@ -48,9 +51,9 @@ def getinfo (url):
     price = doc.xpath(
         '//i[@class="icon-vendor icon-vendor-faq-price"]/../div/p/text()')
     if(len(price) == 1):
-        price = price[0].replace('Da','').replace(' a ','-').replace('.','')
-        price = price.replace('A partire da','')
-        price = price.replace('Meno di','')
+        price = price[0].replace('Da', '').replace(' a ', '-').replace('.', '')
+        price = price.replace('A partire da', '')
+        price = price.replace('Meno di', '')
         price = price.strip()
         vi['price'] = price
     else:
@@ -60,7 +63,7 @@ def getinfo (url):
         '//i[@class="icon-vendor icon-vendor-faq-home"]/../div/p/text()')
     if(len(accommodation) == 1):
         accommodation = accommodation[0].strip()
-        accommodation = accommodation.replace('Sì','yes').replace('No','no')
+        accommodation = accommodation.replace('Sì', 'yes').replace('No', 'no')
         vi['accommodation'] = accommodation
     else:
         vi['accommodation'] = '?'
@@ -69,9 +72,9 @@ def getinfo (url):
         '//i[@class="icon-vendor icon-vendor-faq-pax"]/../div/p/text()')
     if(len(guests) == 1):
         guests = guests[0]
-        guests = guests.replace('Da','').replace(' a ','-')
-        guests = guests.replace('Fino-','1-')
-        guests = guests.replace('invitati','')
+        guests = guests.replace('Da', '').replace(' a ', '-')
+        guests = guests.replace('Fino-', '1-')
+        guests = guests.replace('invitati', '')
         guests = guests.strip()
         vi['guests'] = guests
     else:
@@ -79,7 +82,7 @@ def getinfo (url):
 
     address = doc.xpath('//div[@class="vendor-address"]/text()')
     address = address[0].split()
-    address  = ' '.join(address)
+    address = ' '.join(address)
     vi['address'] = address
 
     region = re.findall('\([^\(\)]*\)', address)
@@ -90,9 +93,9 @@ def getinfo (url):
     else:
         vi['region'] = '?'
 
-    #sub regions that we are interested in 
-    closeregions = ['Bergamo', 'Brescia', 'Lecco', 'Lodi', 'Milano', 
-        'Monza e Brianza']
+    # sub regions that we are interested in
+    closeregions = ['Bergamo', 'Brescia', 'Lecco', 'Lodi', 'Milano',
+                    'Monza e Brianza']
     if(region in closeregions):
         vi['closeregion'] = 'yes'
     else:
@@ -101,8 +104,8 @@ def getinfo (url):
     info = doc.xpath('//div[@class="storefront-description post mr40"]')[0]
     infohtml = str(lxml.etree.tostring(info, pretty_print=True))
 
-    if(infohtml.find('cerimonia religiosa') > 0 
-            or infohtml.find('chiesa') > 0 
+    if(infohtml.find('cerimonia religiosa') > 0
+            or infohtml.find('chiesa') > 0
             or infohtml.find('chiesette') > 0):
         vi['religious'] = 'yes'
     else:
@@ -114,20 +117,21 @@ def getinfo (url):
 #pp(getinfo('https://www.matrimonio.com/ristoranti-ricevimenti/chalet-nel-parco--e117708')); sys.exit()
 #pp(getinfo('')); sys.exit()
 
+
 baseurl = 'https://www.matrimonio.com'
 region = 'ricevimento/lombardia'
 
 csvfile = open('wedven.csv', 'w')
 csw = csv.writer(csvfile, quoting=csv.QUOTE_MINIMAL)
 csw.writerow(['name', 'price', 'guests', 'accommodation', 'religious',
-    'address', 'region', 'closeregion', 'url'])
+              'address', 'region', 'closeregion', 'url'])
 
 doc = downloadparse('%s/%s' % (baseurl, region))
 n = doc.xpath('//span[@class="title"]/text()')[0]
-n = n.replace('aziende','').replace('.', '').strip()
+n = n.replace('aziende', '').replace('.', '').strip()
 n = int(int(n)/12) + 1
 
-#n=2
+# n=2
 for i in range(1, n):
     if(i == 1):
         url = '%s/%s' % (baseurl, region)
@@ -140,8 +144,7 @@ for i in range(1, n):
         info = getinfo(v)
         v = info
         csw.writerow([v['name'], v['price'], v['guests'], v['accommodation'],
-            v['religious'], v['address'], v['region'], v['closeregion'],
-            v['url']])
+                      v['religious'], v['address'], v['region'], v['closeregion'],
+                      v['url']])
 
         print("%s\t%s" % (v['name'], v['url']))
-

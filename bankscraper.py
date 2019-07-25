@@ -23,7 +23,9 @@ import selenium.webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 import os
+import subprocess
 import time
+import datetime
 import sys
 import csv
 from pprint import pprint as pp
@@ -79,8 +81,8 @@ class BankScraper:
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--window-size=1300,1600")
         # default UA is HeadlessChrome rather than Chrome
-        # chromium --version | awk '{print $2}'
-        version = "67.0.3396.87"
+        version = subprocess.run(["chromium", "--version"], capture_output=True)
+        version = version.stdout.split()[1].decode('utf8')
         ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s Safari/537.36" % version
         chrome_options.add_argument("user-agent=%s" % ua)
 
@@ -169,6 +171,10 @@ class BankScraper:
                     csvwriter.writerow(row)
 
             logging.info("wrote %s transactions" % len(alldata))
+
+        logging.info("writting completion timestamp file")
+        with open('%s.done' % filename, 'w') as donefile:
+            donefile.write("%s" % datetime.datetime.now())
 
     def finish(self):
         self.driver.close()

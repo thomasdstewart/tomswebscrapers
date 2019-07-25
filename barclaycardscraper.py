@@ -32,7 +32,7 @@ from pprint import pprint as pp
 class BarclaycardScraper(BankScraper):
     def config_check(self):
         section = self.config[self.basename]
-        if('username' not in section
+        if('idnumber' not in section
            or 'passcode' not in section
            or 'memorableword' not in section):
             logging.info(
@@ -40,7 +40,7 @@ class BarclaycardScraper(BankScraper):
                 % (self.basename, self.configfile))
             sys.exit()
 
-        self.username = self.config[self.basename]['username']
+        self.idnumber = self.config[self.basename]['idnumber']
         self.passcode = self.config[self.basename]['passcode']
         self.memorableword = self.config[self.basename]['memorableword']
 
@@ -48,21 +48,34 @@ class BarclaycardScraper(BankScraper):
         loginurl = "https://bcol.barclaycard.co.uk/ecom/as2/initialLogon.do"
         logging.info("getting page:%s", loginurl)
         self.driver.get(loginurl)
-        self.shotnhtml()
-
-        time.sleep(5)
-        logging.info("filling username and passcode")
-        self.driver.find_element_by_id("username").send_keys(self.username)
-        self.driver.find_element_by_id("password").send_keys(self.passcode)
-        self.driver.find_element_by_class_name("submit").click()
         time.sleep(5)
         self.shotnhtml()
 
-        logging.info("filling memorableword")
+        logging.info("filling idnumber")
+        self.driver.find_element_by_xpath("//input[@id='idNumber']/..").click()
+        self.driver.find_element_by_xpath(
+            "//input[@name='idNumber']").send_keys(self.idnumber)
+        self.shotnhtml()
+
+        logging.info("clicking next")
+        self.driver.find_element_by_xpath("//button[@type='submit']").click()
+        time.sleep(5)
+        self.shotnhtml()
+
+        logging.info("filling passcode")
+        self.driver.find_element_by_id("passcode").send_keys(self.passcode)
+        self.shotnhtml()
+
+        logging.info("clicking next")
+        self.driver.find_element_by_xpath("//button[@type='submit']").click()
+        time.sleep(5)
+        self.shotnhtml()
+
+        logging.info("finding memorableword letters")
         first = self.driver.find_element_by_xpath(
-            "//label[@id='letter1Answer-label']").text
+            "//label[@for='memorableWord_0_letter1']").text
         second = self.driver.find_element_by_xpath(
-            "//label[@id='letter2Answer-label']").text
+            "//label[@for='memorableWord_1_letter2']").text
 
         first = int(first[0:1])
         second = int(second[0:1])
@@ -70,15 +83,16 @@ class BarclaycardScraper(BankScraper):
         first = str(self.memorableword[first-1:first])
         second = str(self.memorableword[second-1:second])
 
+        logging.info("filling memorableword")
         self.driver.find_element_by_xpath(
-            "//input[@id='letter1Answer']").send_keys(first)
+            "//input[@id='memorableWord_0_letter1']").send_keys(first)
         self.driver.find_element_by_xpath(
-            "//input[@id='letter2Answer']").send_keys(second)
+            "//input[@id='memorableWord_1_letter2']").send_keys(second)
         time.sleep(5)
         self.shotnhtml()
 
         logging.info("logging on")
-        self.driver.find_element_by_id("btn-login").click()
+        self.driver.find_element_by_xpath("//button[@type='submit']").click()
         time.sleep(5)
         self.shotnhtml()
 
@@ -93,22 +107,22 @@ class BarclaycardScraper(BankScraper):
         self.shotnhtml()
 
         logging.info("selecting view more transactions")
-        self.driver.find_element_by_xpath(
-            "//div[@data-webtrends-ref='home-recentTrans']/a").click()
+        self.driver.find_elements_by_xpath(
+            "//a[@href='../recentTransactions.do']")[1].click()
         time.sleep(5)
         self.shotnhtml()
 
-#        logging.info("selecting Filter & Search")
-#        self.driver.find_element_by_xpath(
-#            "//ul[@class='tablist']/li[@id='tab1']").click()
-#        time.sleep(5)
-#        self.shotnhtml()
+        logging.info("selecting Filter & Search")
+        self.driver.find_element_by_xpath(
+            "//ul[@class='tablist']/li[@id='tab1']").click()
+        time.sleep(5)
+        self.shotnhtml()
 
-#        logging.info("selecting 3 months")
-#        self.driver.find_element_by_xpath(
-#            "//div[@class='dateLinks']/ul/li").click()
-#        time.sleep(5)
-#        self.shotnhtml()
+        logging.info("selecting 3 months")
+        self.driver.find_element_by_xpath(
+            "//div[@class='dateLinks']/ul/li").click()
+        time.sleep(5)
+        self.shotnhtml()
 
         logging.info("waiting for page load")
         time.sleep(10)
@@ -126,7 +140,7 @@ class BarclaycardScraper(BankScraper):
         for row in rows:
             r = row.text.split('\n')
             date = r[0]
-            account = self.username
+            account = self.idnumber
             year = "20%s" % date.split()[2]
             desc = r[1].strip()
             amount = r[-1:][0].strip()
@@ -203,7 +217,7 @@ class BarclaycardScraper(BankScraper):
         self.driver.find_element_by_id("logout").click()
         self.shotnhtml()
 
-        self.savedata("%s-%s" % (self.basename, self.username))
+        self.savedata("%s-%s" % (self.basename, self.idnumber))
         self.finish()
 
 
