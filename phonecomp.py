@@ -66,7 +66,8 @@ phones = [
     'htc_desire_hd-3468',               # Jan 2011
     'samsung_galaxy_note_ii_n7100-4854',# Summer 2013
     'huawei_nexus_6p-7588',             # Nov 2015
-    'google_pixel_xl-8345'              # Sept 2017
+    'google_pixel_xl-8345',             # Sept 2017
+    'samsung_galaxy_a70-9646'           # Feb 2020
     ]
 
 allphones = {}

@@ -24,7 +24,7 @@ import re
 import os
 import sys
 import time
-from bankscraper import BankScraper
+from bankscraperff import BankScraper
 from pprint import pprint as pp
 # import ipdb; from IPython import embed; embed()
 
