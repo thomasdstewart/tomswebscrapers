@@ -58,16 +58,16 @@ def getphone (model):
 #sys.exit()
 
 phones = [
-    'sony_ericsson_t68i-325',           # Oct 2002
-    'nokia_6230-566',                   # Summer 2004
-    'nokia_6230i-1087',                 # Dec 2005
-    'htc_p3300-1693',                   # Feb 2007
-    'htc_touch_hd-2525',                # Feb 2009
-    'htc_desire_hd-3468',               # Jan 2011
-    'samsung_galaxy_note_ii_n7100-4854',# Summer 2013
-    'huawei_nexus_6p-7588',             # Nov 2015
-    'google_pixel_xl-8345',             # Sept 2017
-    'samsung_galaxy_a70-9646'           # Feb 2020
+    'sony_ericsson_t68i-325',           # Oct 2002 (21 months)
+    'nokia_6230-566',                   # Jul 2004 (17 months)
+    'nokia_6230i-1087',                 # Dec 2005 (14 months)
+    'htc_p3300-1693',                   # Feb 2007 (24 months)
+    'htc_touch_hd-2525',                # Feb 2009 (23 months)
+    'htc_desire_hd-3468',               # Jan 2011 (30 months)
+    'samsung_galaxy_note_ii_n7100-4854',# Jul 2013 (28 months)
+    'huawei_nexus_6p-7588',             # Nov 2015 (22 months)
+    'google_pixel_xl-8345',             # Sep 2017 (29 months)
+    'samsung_galaxy_a70-9646'           # Feb 2020 (31 months so far) avg=23.9: echo "(21+17+14+24+23+30+28+22+29+31)/10" | bc
     ]
 
 allphones = {}
