@@ -67,7 +67,8 @@ phones = [
     'samsung_galaxy_note_ii_n7100-4854',# Jul 2013 (28 months)
     'huawei_nexus_6p-7588',             # Nov 2015 (22 months)
     'google_pixel_xl-8345',             # Sep 2017 (29 months)
-    'samsung_galaxy_a70-9646'           # Feb 2020 (31 months so far) avg=23.9: echo "(21+17+14+24+23+30+28+22+29+31)/10" | bc
+    'samsung_galaxy_a70-9646',          # Feb 2020 (35 months)
+    'samsung_galaxy_s22_ultra_5g-11251' # Jan 2023 (1 month so far) avg=24.3: echo "(21+17+14+24+23+30+28+22+29+35)/10" | bc
     ]
 
 allphones = {}
